@@ -34,7 +34,7 @@ public:
     Container& edit_train(int index);
     void display_trains();
     void sort_trains_by_number();
-    void search_train();
+    void search_train(const int number);
 
     Container& operator[](int index);
 };

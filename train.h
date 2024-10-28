@@ -25,4 +25,5 @@ class Train {
         void set_time(const string& t);
 
         void display_train();
+        void edit_train();
 };
