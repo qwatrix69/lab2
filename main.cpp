@@ -1,6 +1,8 @@
 #include "container.h"
 #include "train.h"
 #include "check.h"
+#include "sentense_filter.h"
+#include <iostream>
 
 using namespace std;
 
@@ -16,13 +18,13 @@ void display_menu() {
     cout << "Введите ваш выбор: ";
 }
 
-int main() {
+int trains_program() {
     Container trains;
     int choice;
 
     while (true) {
         display_menu();
-        cin >> choice;
+        choice = check_input();
 
         switch (choice) {
             case 1: {
@@ -83,8 +85,8 @@ int main() {
                 break;
             }
             case 6: {
+                cout << "Введите номер поезда для поиска: ";
                 int number = check_input();
-                cout << "Введите номер поезда для поиска" << endl;
                 trains.search_train(number);
                 break;
             }
@@ -100,4 +102,57 @@ int main() {
     }
 
     return 0;
+}
+
+int words_program() {
+    int wordCount;
+    cout << "Введите количество слов в предложении: ";
+    cin >> wordCount;
+
+    int choice;
+    cout << "Выберите источник (1 - строка, 2 - файл): ";
+    cin >> choice;
+
+    if (choice == 1) {
+        cin.ignore();
+        char text[8192];
+        cout << "Введите текст: ";
+        cin.getline(text, sizeof(text));
+        SentenceFilter filter(text, wordCount, true);
+        filter.result();
+    } else if (choice == 2) {
+        char filename[256];
+        cout << "Введите имя файла: ";
+        cin >> filename;
+        SentenceFilter filter(filename, wordCount);
+        filter.result();
+    }
+    return 0;
+}
+
+
+int main() {
+    int choice;
+    while (true) {
+        cout << "Выберите тип задания:" << endl;
+        cout << "1 - Стандартные потоки" << endl;
+        cout << "2 - Файловые и строковые потоки" << endl;
+        cout << "3 - Выход" << endl;
+        choice = check_input();
+
+        switch (choice) {
+            case 1:
+                trains_program();
+                break;
+            case 2:
+                words_program();
+                break;
+            case 3:
+                cout << "Завершение работы." << endl;
+                return 0;
+            default:
+                cout << "Неверный выбор! Попробуйте снова." << endl;
+                break;
+        }
+    }
 }
