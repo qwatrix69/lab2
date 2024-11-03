@@ -39,23 +39,26 @@ void Container::add_train(Train* Tr, int index) {
     Node* node_to_add = new Node;
     node_to_add->data = Tr;
     node_to_add->next = nullptr;
-    
-    if (index == 0)
-        head = tail = node_to_add; 
-    else {
+
+    if (index == 0) {
+        node_to_add->next = head;
+        head = node_to_add;
+        if (count == 0) {
+            tail = node_to_add;
+        }
+    } else {
         Node* prev = head;
         for (int i = 0; i < index - 1; ++i) {
-            if (prev->next == nullptr) {
-                throw out_of_range("Index out of range");
-            }
             prev = prev->next;
         }
         node_to_add->next = prev->next;
         prev->next = node_to_add;
-        if (prev == tail) {
+        
+        if (node_to_add->next == nullptr) {
             tail = node_to_add;
         }
     }
+    
     ++count;
 }
 
@@ -93,15 +96,16 @@ Container& Container::delete_train(int index) {
 
 void Container::display_trains() {
     Node* temp = head;
-    if (count = 0) {
+    if (count == 0) {
         cout << "Поездов нет" << endl;
         return;
     }
+    int index = 1;
     while (temp != 0) {
-        cout << count + 1 << " - Информация о поезде:\n";
+        cout << index << " - Информация о поезде:\n";
         temp->data->display_train();
         temp = temp->next;
-        count++;
+        index++;
     }
 }
 

@@ -1,104 +1,85 @@
 #include "sentense_filter.h"
 
-SentenceFilter::SentenceFilter() : source(""), count(0), isTextSource(false) {cout << "Вызван конструктор без параметров для класса SentenceFilter\n";}
-
-SentenceFilter::SentenceFilter(const char* filename, int count)
-    : count(count), isTextSource(false) {
-    source = new char[strlen(filename) + 1];
-    strcpy(source, filename);
-    cout << "Вызван конструктор c параметрами для класса SentenceFilter\n";
+SentenceFilter::SentenceFilter() : source(""), count(0), isTextSource(false) {
+    cout << "Вызван конструктор без параметров для класса SentenceFilter\n";
 }
 
-SentenceFilter::SentenceFilter(const char* text, int count, bool isText)
-    : count(count), isTextSource(isText) {
-    source = new char[strlen(text) + 1];
-    strcpy(source, text);
+SentenceFilter::SentenceFilter(const string& filename, int count)
+    : source(filename), count(count), isTextSource(false) {
+    cout << "Вызван конструктор с параметрами для класса SentenceFilter\n";
+}
+
+SentenceFilter::SentenceFilter(const string& text, int count, bool isText)
+    : source(text), count(count), isTextSource(isText) {
     cout << "Вызван конструктор копирования для класса SentenceFilter\n";
 }
 
 SentenceFilter::~SentenceFilter() {
-    delete[] source;
     cout << "Вызван деструктор для класса SentenceFilter\n";
 }
 
 void SentenceFilter::result() const {
-    char* text = new char[8192];
+    string text;
+    
     if (isTextSource) {
-        strncpy(text, source, 8192 - 1);
-        text[8191] = '\0';
+        text = source;
     } else {
         ifstream file(source);
         if (!file.is_open()) {
             cerr << "Не удалось открыть файл: " << source << endl;
-            delete[] text;
             return;
         }
-        file.read(text, 8191);
-        text[file.gcount()] = '\0';
+        ostringstream buffer;
+        buffer << file.rdbuf();
+        text = buffer.str();
         file.close();
     }
+
     cout << "Считанный текст:\n" << text << "\n\n";
-    char** sentences = nullptr;
+
+    string* sentences = nullptr;
     int sentenceCount = 0;
     split_into_sent(text, sentences, sentenceCount);
-    delete[] text;
+
     cout << "Всего найдено предложений: " << sentenceCount << endl;
     for (int i = 0; i < sentenceCount; ++i) {
         int words = count_words(sentences[i]);
         if (words == count) {
             cout << sentences[i] << endl;
         }
-        delete[] sentences[i];
     }
+
     delete[] sentences;
 }
 
-void SentenceFilter::split_into_sent(const char* text, char**& sentences, int& sentenceCount) const {
-    sentenceCount = 0;
+void SentenceFilter::split_into_sent(const string& text, string*& sentences, int& sentenceCount) const {
     const int maxSentences = 100;
-    const int maxLength = 100;
-    sentences = new char*[maxSentences]; 
-    int charIndex = 0;
-    for (int i = 0; text[i] != '\0'; ++i) {
-        if (text[i] == '.' || text[i] == '!' || text[i] == '?') {
+    sentences = new string[maxSentences];
+    sentenceCount = 0;
+    ostringstream sentenceStream;
+
+    for (char ch : text) {
+        sentenceStream << ch;
+        if (ch == '.' || ch == '!' || ch == '?') {
             if (sentenceCount < maxSentences) {
-                sentences[sentenceCount] = new char[charIndex + 2];
-                strncpy(sentences[sentenceCount], text + i - charIndex, charIndex);
-                sentences[sentenceCount][charIndex] = '\0';
-                sentenceCount++;
-                charIndex = 0;
+                sentences[sentenceCount++] = sentenceStream.str();
+                sentenceStream.str("");
+                sentenceStream.clear();
             }
-        } else {
-            charIndex++;
         }
     }
-    if (charIndex > 0 && sentenceCount < maxSentences) {
-        sentences[sentenceCount] = new char[charIndex + 1];
-        strncpy(sentences[sentenceCount], text + strlen(text) - charIndex, charIndex);
-        sentences[sentenceCount][charIndex] = '\0';
-        sentenceCount++;
-    }
-    if (sentenceCount == 0) {
-        delete[] sentences;
-        sentences = nullptr;
+    if (!sentenceStream.str().empty() && sentenceCount < maxSentences) {
+        sentences[sentenceCount++] = sentenceStream.str();
     }
 }
 
-
-int SentenceFilter::count_words(const char* sentence) const {
+int SentenceFilter::count_words(const string& sentence) const {
     int count = 0;
-    bool inWord = false;
-    for (int i = 0; sentence[i] != '\0'; ++i) {
-        if (isspace(sentence[i])) {
-            if (inWord) {
-                count++;
-                inWord = false;
-            }
-        } else {
-            inWord = true;
-        }
+    istringstream ss(sentence);
+    string word;
+
+    while (ss >> word) {
+        ++count;
     }
-    if (inWord)
-        count++;
     return count;
 }

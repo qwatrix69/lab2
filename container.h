@@ -7,11 +7,11 @@
 
 using namespace std;
 
-    struct Node
-    {
-        Node* next;
-        Train* data;
-    };
+struct Node
+{
+    Node* next;
+    Train* data;
+};
 
 class Container
 {
