@@ -22,6 +22,7 @@ public:
     SentenceFilter();
     SentenceFilter(const string& filename, int wordCount);
     SentenceFilter(const string& text, int wordCount, bool isText);
+    SentenceFilter(const SentenceFilter& other);
     ~SentenceFilter();
     void result() const;
 };

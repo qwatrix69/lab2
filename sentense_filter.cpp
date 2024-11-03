@@ -11,6 +11,11 @@ SentenceFilter::SentenceFilter(const string& filename, int count)
 
 SentenceFilter::SentenceFilter(const string& text, int count, bool isText)
     : source(text), count(count), isTextSource(isText) {
+    cout << "Вызван конструктор с параметрами для класса SentenceFilter\n";
+}
+
+SentenceFilter::SentenceFilter(const SentenceFilter& other)
+    : source(other.source), count(other.count), isTextSource(other.isTextSource) {
     cout << "Вызван конструктор копирования для класса SentenceFilter\n";
 }
 
