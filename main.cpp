@@ -2,9 +2,6 @@
 #include "train.h"
 #include "check.h"
 #include "sentense_filter.h"
-#include <iostream>
-
-using namespace std;
 
 void display_menu() {
     cout << "\n===== Меню управления поездами =====" << endl;
