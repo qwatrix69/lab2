@@ -23,7 +23,7 @@ SentenceFilter::~SentenceFilter() {
     cout << "Вызван деструктор для класса SentenceFilter\n";
 }
 
-void SentenceFilter::result() const {
+void SentenceFilter::result() const { // чтение данных из файла или строки
     string text;
     
     if (isTextSource) {
@@ -34,9 +34,9 @@ void SentenceFilter::result() const {
             cerr << "Не удалось открыть файл: " << source << endl;
             return;
         }
-        ostringstream buffer;
-        buffer << file.rdbuf();
-        text = buffer.str();
+        ostringstream buffer; // буфер (запись в output поток)
+        buffer << file.rdbuf(); // в буфер из файла
+        text = buffer.str(); // в текст строки из буфера
         file.close();
     }
 
@@ -47,7 +47,7 @@ void SentenceFilter::result() const {
     split_into_sent(text, sentences, sentenceCount);
 
     cout << "Всего найдено предложений: " << sentenceCount << endl;
-    for (int i = 0; i < sentenceCount; ++i) {
+    for (int i = 0; i < sentenceCount; ++i) { // вывод предложений 
         int words = count_words(sentences[i]);
         if (words == count) {
             cout << sentences[i] << endl;
@@ -61,11 +61,11 @@ void SentenceFilter::split_into_sent(const string& text, string*& sentences, int
     const int maxSentences = 100;
     sentences = new string[maxSentences];
     sentenceCount = 0;
-    ostringstream sentenceStream;
+    ostringstream sentenceStream; // запись в output поток
 
     for (char ch : text) {
         sentenceStream << ch;
-        if (ch == '.' || ch == '!' || ch == '?') {
+        if (ch == '.' || ch == '!' || ch == '?') { // посимвольно делим на предложения
             if (sentenceCount < maxSentences) {
                 sentences[sentenceCount++] = sentenceStream.str();
                 sentenceStream.str("");
@@ -73,7 +73,7 @@ void SentenceFilter::split_into_sent(const string& text, string*& sentences, int
             }
         }
     }
-    if (!sentenceStream.str().empty() && sentenceCount < maxSentences) {
+    if (!sentenceStream.str().empty() && sentenceCount < maxSentences) { // проверка на остататок текста
         sentences[sentenceCount++] = sentenceStream.str();
     }
 }

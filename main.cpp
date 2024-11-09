@@ -28,7 +28,6 @@ int trains_program() {
                 string destination, time;
                 int number, index;
                 cout << "Введите пункт назначения: ";
-                cin.ignore();
                 getline(cin, destination);
                 cout << "Введите номер поезда: ";
                 number = check_input();
